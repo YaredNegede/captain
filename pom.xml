@@ -53,47 +53,18 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-		<!--apps-->
-
-		<!-- Temporarily removing LangChain4j starter to diagnose Spring Boot startup NoSuchFieldError -->
-		<!--
-		
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-open-ai-spring-boot-starter</artifactId>
-			<version>1.8.0-beta15</version>
+			<artifactId>langchain4j-core</artifactId>
+			<version>1.8.0</version>
 		</dependency>
-		<dependency>
-			<groupId>dev.langchain4j</groupId>
-			<artifactId>langchain4j-open-ai-spring-boot-starter</artifactId>
-			<version>1.8.0-beta15</version>
-		</dependency>
-		-->
 
 		<!--ops-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-
-		<!-- Springfox removed to avoid incompatibilities with Spring Boot 2.7 -->
-		<!-- Removed Springfox UI to help eliminate startup NoSuchFieldError with Boot 2.7 -->
-		<!--
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>${springfox.version}</version>
-		</dependency>
-		-->
-		<!-- Removed Springfox to avoid incompatibilities with Spring Boot 2.7; using OpenAPI v3 annotations instead -->
-		<!--
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>${springfox.version}</version>
-		</dependency>
-		-->
-  
+ 
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-annotations</artifactId>
