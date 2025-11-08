@@ -1,0 +1,9 @@
+{
+  "tool": "kubectl",
+  "action": "apply",
+  "args": {
+    "manifest": "<yaml>",
+    "dry_run": true,
+    "namespace": "prod"
+  }
+}

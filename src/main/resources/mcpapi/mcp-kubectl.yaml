@@ -1,0 +1,49 @@
+# mcp-kubectl.yaml
+mcp_tool:
+  name: kubectl
+  id: local.kubectl.v1
+  version: "1.0.0"
+  description: >
+    Local kubectl MCP tool exposing core Kubernetes operations.
+    Non-mutating operations run by default. Mutating/privileged operations require user escalation.
+  runtime: local
+  entrypoint: /usr/local/bin/mcp-kubectl-service  # your service binary
+  capabilities:
+    - get
+    - describe
+    - logs
+    - exec
+    - apply
+    - delete
+    - port_forward
+    - scale
+    - patch
+    - rollout
+    - top
+  default_timeout_seconds: 30
+  concurrency_limit: 4
+  auditing:
+    enabled: true
+    path: /var/log/mcp-kubectl/audit.log
+  security:
+    mutating_operations_require_escalation: true
+    escalation_methods: ["prompt", "cli_confirm", "external_authz_api"]
+  schemas:
+    # Each action below now directly references the OpenAPI component schemas in ../openapi/api-spec.yaml
+    # Relative path from this file (mcpapi/) to openapi/ folder.
+    get: { input_schema: "../openapi/api-spec.yaml#/components/schemas/GetRequest", output_schema: "../openapi/api-spec.yaml#/components/schemas/GetResponse" }
+    describe: { input_schema: "../openapi/api-spec.yaml#/components/schemas/DescribeRequest", output_schema: "../openapi/api-spec.yaml#/components/schemas/DescribeResponse" }
+    logs: { input_schema: "../openapi/api-spec.yaml#/components/schemas/LogsRequest", output_schema: "../openapi/api-spec.yaml#/components/schemas/LogsResponse" }
+    exec: { input_schema: "../openapi/api-spec.yaml#/components/schemas/ExecRequest", output_schema: "../openapi/api-spec.yaml#/components/schemas/ExecResponse" }
+    apply: { input_schema: "../openapi/api-spec.yaml#/components/schemas/ApplyRequest", output_schema: "../openapi/api-spec.yaml#/components/schemas/ApplyResponse" }
+    delete: { input_schema: "../openapi/api-spec.yaml#/components/schemas/DeleteRequest", output_schema: "../openapi/api-spec.yaml#/components/schemas/DeleteResponse" }
+    port_forward: { input_schema: "../openapi/api-spec.yaml#/components/schemas/PortForwardRequest", output_schema: "../openapi/api-spec.yaml#/components/schemas/PortForwardResponse" }
+    scale: { input_schema: "../openapi/api-spec.yaml#/components/schemas/ScaleRequest", output_schema: "../openapi/api-spec.yaml#/components/schemas/ScaleResponse" }
+    patch: { input_schema: "../openapi/api-spec.yaml#/components/schemas/PatchRequest", output_schema: "../openapi/api-spec.yaml#/components/schemas/PatchResponse" }
+    rollout: { input_schema: "../openapi/api-spec.yaml#/components/schemas/RolloutRequest", output_schema: "../openapi/api-spec.yaml#/components/schemas/RolloutResponse" }
+    top: { input_schema: "../openapi/api-spec.yaml#/components/schemas/TopRequest", output_schema: "../openapi/api-spec.yaml#/components/schemas/TopResponse" }
+
+  ui_hint:
+    prefer_json_output: true
+    large_logs_chunk_size: 20000  # bytes
+   

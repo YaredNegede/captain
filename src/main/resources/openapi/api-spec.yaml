@@ -1,384 +1,604 @@
 openapi: 3.0.3
 info:
-  title: Captain API
-  description: API for Captain application generated from OpenAPI specification
+  title: ChatController API
+  description: |
+    REST API that exposes core Kubernetes operations (get, describe, logs, exec, apply, delete, scale, port-forward, etc.)
+    for local runtime control, security-aware AI orchestration, or MCP-based agent systems.
   version: 1.0.0
   contact:
-    name: Captain Team
-    email: support@captain.com
+    name: ChatController Team
+    email: support@chatcontroller.local
 
 servers:
   - url: http://localhost:8080
     description: Local development server
 
 tags:
-  - name: Users
-    description: User management operations
-  - name: Items
-    description: Item management operations
+  - name: Core
+    description: Core Kubernetes resource operations
+  - name: Pods
+    description: Pod operations (logs, exec, port-forward)
+  - name: Apply
+    description: Apply manifests
+  - name: Delete
+    description: Delete resources
+  - name: Scale
+    description: Scale workloads
 
 paths:
-  /api/users:
-    get:
-      tags:
-        - Users
-      summary: Get all users
-      description: Retrieve a list of all users
-      operationId: getAllUsers
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    
+  /api/get:
     post:
-      tags:
-        - Users
-      summary: Create a new user
-      description: Create a new user in the system
-      operationId: createUser
+      tags: [Core]
+      summary: Get Kubernetes resources
+      operationId: getResources
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRequest'
-      responses:
-        '201':
-          description: User created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /api/users/{userId}:
-    get:
-      tags:
-        - Users
-      summary: Get user by ID
-      description: Retrieve a specific user by their ID
-      operationId: getUserById
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          description: ID of the user to retrieve
-          schema:
-            type: string
-            format: uuid
+              $ref: '#/components/schemas/GetRequest'
       responses:
         '200':
-          description: Successful operation
+          description: List or resource detail
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/GetResponse'
         '500':
-          description: Internal server error
+          description: Error executing kubectl get
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-    
-    put:
-      tags:
-        - Users
-      summary: Update user
-      description: Update an existing user
-      operationId: updateUser
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          description: ID of the user to update
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserRequest'
-      responses:
-        '200':
-          description: User updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/GetResponse'
 
-    delete:
-      tags:
-        - Users
-      summary: Delete user
-      description: Delete a user by ID
-      operationId: deleteUser
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          description: ID of the user to delete
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '204':
-          description: User deleted successfully
-        '404':
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /api/items:
-    get:
-      tags:
-        - Items
-      summary: Get all items
-      description: Retrieve a list of all items
-      operationId: getAllItems
-      parameters:
-        - name: category
-          in: query
-          required: false
-          description: Filter items by category
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Item'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
+  /api/describe:
     post:
-      tags:
-        - Items
-      summary: Create a new item
-      description: Create a new item in the system
-      operationId: createItem
+      tags: [Core]
+      summary: Describe a resource
+      operationId: describeResource
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ItemRequest'
+              $ref: '#/components/schemas/DescribeRequest'
       responses:
-        '201':
-          description: Item created successfully
+        '200':
+          description: Resource description output
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Item'
-        '400':
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/DescribeResponse'
         '500':
-          description: Internal server error
+          description: Error executing kubectl describe
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/DescribeResponse'
+
+  /api/logs:
+    post:
+      tags: [Pods]
+      summary: Get pod logs
+      operationId: getLogs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogsRequest'
+      responses:
+        '200':
+          description: Log stream output
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogsResponse'
+        '500':
+          description: Error fetching logs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogsResponse'
+
+  /api/exec:
+    post:
+      tags: [Pods]
+      summary: Execute a command in a pod
+      operationId: execCommand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExecRequest'
+      responses:
+        '200':
+          description: Command execution result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecResponse'
+        '403':
+          description: Escalation required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecResponse'
+        '500':
+          description: Error executing command
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecResponse'
+
+  /api/apply:
+    post:
+      tags: [Apply]
+      summary: Apply a manifest (kubectl apply)
+      operationId: applyManifest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyRequest'
+      responses:
+        '200':
+          description: Apply result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplyResponse'
+        '403':
+          description: Escalation required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplyResponse'
+        '500':
+          description: Error applying manifest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplyResponse'
+
+  /api/delete:
+    post:
+      tags: [Delete]
+      summary: Delete a Kubernetes resource
+      operationId: deleteResource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteRequest'
+      responses:
+        '200':
+          description: Resource deletion result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResponse'
+        '403':
+          description: Escalation required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResponse'
+        '500':
+          description: Error deleting resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResponse'
+
+  /api/scale:
+    post:
+      tags: [Scale]
+      summary: Scale a workload
+      operationId: scaleWorkload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScaleRequest'
+      responses:
+        '200':
+          description: Scale result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScaleResponse'
+        '403':
+          description: Escalation required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScaleResponse'
+        '500':
+          description: Error scaling workload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScaleResponse'
+
+  /api/port-forward:
+    post:
+      tags: [Pods]
+      summary: Forward ports to a pod
+      operationId: portForward
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PortForwardRequest'
+      responses:
+        '200':
+          description: Port-forward result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortForwardResponse'
+        '403':
+          description: Escalation required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortForwardResponse'
+        '500':
+          description: Error forwarding ports
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortForwardResponse'
 
 components:
   schemas:
-    User:
+    BaseRequest:
       type: object
-      required:
-        - id
-        - username
-        - email
       properties:
-        id:
+        kubeconfig:
           type: string
-          format: uuid
-          description: Unique identifier for the user
-        username:
+          nullable: true
+          description: Optional kubeconfig content. If omitted, use default KUBECONFIG or ~/.kube/config.
+        context:
           type: string
-          description: Username of the user
-          example: johndoe
-        email:
+          nullable: true
+        namespace:
           type: string
-          format: email
-          description: Email address of the user
-          example: john.doe@example.com
-        firstName:
-          type: string
-          description: First name of the user
-          example: John
-        lastName:
-          type: string
-          description: Last name of the user
-          example: Doe
-        createdAt:
-          type: string
-          format: date-time
-          description: Timestamp when the user was created
+          nullable: true
+          description: If omitted, use default namespace.
+        timeout_seconds:
+          type: integer
+          minimum: 1
+          default: 30
+      required: []
 
-    UserRequest:
+    GetRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
       type: object
-      required:
-        - username
-        - email
       properties:
-        username:
+        resource:
           type: string
-          description: Username of the user
-          minLength: 3
-          maxLength: 50
-          example: johndoe
-        email:
-          type: string
-          format: email
-          description: Email address of the user
-          example: john.doe@example.com
-        firstName:
-          type: string
-          description: First name of the user
-          example: John
-        lastName:
-          type: string
-          description: Last name of the user
-          example: Doe
-
-    Item:
-      type: object
-      required:
-        - id
-        - name
-        - category
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier for the item
+          description: Resource type, e.g., pods, deployments
         name:
           type: string
-          description: Name of the item
-          example: Laptop
-        description:
+          nullable: true
+          description: Optional resource name
+        label_selector:
           type: string
-          description: Description of the item
-          example: High-performance laptop for development
-        category:
+          nullable: true
+        field_selector:
           type: string
-          description: Category of the item
-          example: Electronics
-        price:
-          type: number
-          format: double
-          description: Price of the item
-          example: 999.99
-        createdAt:
+          nullable: true
+        output:
           type: string
-          format: date-time
-          description: Timestamp when the item was created
+          enum: [json, yaml, wide]
+          default: json
+        limit:
+          type: integer
+          minimum: 1
+      required: [resource]
 
-    ItemRequest:
+    GetResponse:
       type: object
-      required:
-        - name
-        - category
       properties:
+        items:
+          type: array
+          items:
+            type: object
+          nullable: true
+          description: Array of resources (parsed JSON)
+        raw:
+          type: string
+          description: Raw output if parsing failed
+        summary:
+          type: string
+        status:
+          type: string
+          enum: [ok, partial, error]
+        error_message:
+          type: string
+          nullable: true
+      required: [status]
+
+    DescribeRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+      type: object
+      properties:
+        resource:
+          type: string
         name:
           type: string
-          description: Name of the item
-          minLength: 1
-          maxLength: 100
-          example: Laptop
-        description:
+        output:
           type: string
-          description: Description of the item
-          example: High-performance laptop for development
-        category:
-          type: string
-          description: Category of the item
-          example: Electronics
-        price:
-          type: number
-          format: double
-          description: Price of the item
-          minimum: 0
-          example: 999.99
+          enum: [yaml, wide, text]
+          default: text
+      required: [resource, name]
 
-    Error:
+    DescribeResponse:
       type: object
-      required:
-        - message
       properties:
-        message:
+        raw:
           type: string
-          description: Error message
-        code:
+        summary:
           type: string
-          description: Error code
-        timestamp:
+        status:
           type: string
-          format: date-time
-          description: Timestamp when the error occurred
+          enum: [ok, error]
+        error_message:
+          type: string
+          nullable: true
+      required: [status]
+
+    LogsRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+      type: object
+      properties:
+        pod_selector:
+          type: string
+          description: pod name or selector
+        container:
+          type: string
+          nullable: true
+        since_seconds:
+          type: integer
+          nullable: true
+        tail_lines:
+          type: integer
+          nullable: true
+        follow:
+          type: boolean
+          default: false
+        previous:
+          type: boolean
+          default: false
+      required: [pod_selector]
+
+    LogsResponse:
+      type: object
+      properties:
+        stdout:
+          type: string
+        stderr:
+          type: string
+        truncated:
+          type: boolean
+          default: false
+        status:
+          type: string
+          enum: [ok, partial, error]
+        error_message:
+          type: string
+          nullable: true
+      required: [status]
+
+    ExecRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+      type: object
+      properties:
+        pod:
+          type: string
+        container:
+          type: string
+          nullable: true
+        command:
+          type: array
+          items:
+            type: string
+        tty:
+          type: boolean
+          default: false
+        interactive:
+          type: boolean
+          default: false
+        require_escalation:
+          type: boolean
+          default: false
+      required: [pod, command]
+
+    ExecResponse:
+      type: object
+      properties:
+        exit_code:
+          type: integer
+        stdout:
+          type: string
+        stderr:
+          type: string
+        status:
+          type: string
+          enum: [ok, error, escalation_required]
+        escalation_token:
+          type: string
+          nullable: true
+          description: When escalation required, a token to correlate approval.
+        error_message:
+          type: string
+          nullable: true
+      required: [status]
+
+    ApplyRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+      type: object
+      properties:
+        manifest:
+          type: string
+          description: YAML manifest content
+        manifest_path:
+          type: string
+        dry_run:
+          type: boolean
+          default: true
+        force:
+          type: boolean
+          default: false
+
+    ApplyResponse:
+      type: object
+      properties:
+        applied_objects:
+          type: array
+          items:
+            type: object
+        dry_run_result:
+          type: string
+        status:
+          type: string
+          enum: [ok, escalation_required, error]
+        escalation_token:
+          type: string
+          nullable: true
+        error_message:
+          type: string
+          nullable: true
+      required: [status]
+
+    DeleteRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+      type: object
+      properties:
+        resource:
+          type: string
+        name:
+          type: string
+        grace_period_seconds:
+          type: integer
+        force:
+          type: boolean
+          default: false
+      required: [resource, name]
+
+    DeleteResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ok, escalation_required, error]
+        deleted_object:
+          type: object
+          nullable: true
+        escalation_token:
+          type: string
+          nullable: true
+        error_message:
+          type: string
+          nullable: true
+      required: [status]
+
+    PortForwardRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+      type: object
+      properties:
+        pod:
+          type: string
+        ports:
+          type: array
+          items:
+            type: string
+          description: "List like ['8080:80']"
+        background:
+          type: boolean
+          default: false
+        require_escalation:
+          type: boolean
+          default: true
+      required: [pod, ports]
+
+    PortForwardResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ok, escalation_required, error]
+        local_bindings:
+          type: array
+          items:
+            type: string
+        escalation_token:
+          type: string
+          nullable: true
+        error_message:
+          type: string
+          nullable: true
+      required: [status]
+
+    ScaleRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseRequest'
+      type: object
+      properties:
+        resource:
+          type: string
+        name:
+          type: string
+        replicas:
+          type: integer
+      required: [resource, name, replicas]
+
+    ScaleResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ok, escalation_required, error]
+        result:
+          type: object
+        escalation_token:
+          type: string
+          nullable: true
+        error_message:
+          type: string
+          nullable: true
+      required: [status]
+
+    PatchRequest:
+      type: object
+
+    PatchResponse:
+      type: object
+
+    RolloutRequest:
+      type: object
+
+    RolloutResponse:
+      type: object
+
+    TopRequest:
+      type: object
+
+    TopResponse:
+      type: object
+
+

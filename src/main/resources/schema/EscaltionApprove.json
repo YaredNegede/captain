@@ -1,0 +1,10 @@
+{
+  "tool": "kubectl",
+  "action": "apply_escalation_confirm",
+  "args": {
+    "escalation_token": "tok_abc123",
+    "approval": true,
+    "approver": "yared@example.com",
+    "comment": "Approve deploy after smoke tests"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "status": "escalation_required",
+  "dry_run_result": "...kubectl apply --dry-run=server output...",
+  "escalation_token": "tok_abc123",
+  "summary": "Would create 1 Deployment, update 1 Service"
+}

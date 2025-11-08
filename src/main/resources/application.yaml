@@ -12,6 +12,15 @@ springdoc:
     path: /swagger-ui.html
     enabled: true
 
+langchain4j:
+  open-ai:
+    chat-model:
+      api-key: ${OPENAI_API_KEY}
+      chat-model:
+        model-name: gpt-4o
+        log-requests: true
+        log-responses: true
+
 logging:
   level:
     com.captain: INFO

@@ -1,0 +1,6 @@
+# Ignore specific supporting files while generating everything else
+# Exclude Spring Boot application class that breaks older Spring Boot versions
+src/main/java/com/captain/invoker/OpenApiGeneratorApplication.java
+
+# Exclude generated test sources
+src/test/java/**
